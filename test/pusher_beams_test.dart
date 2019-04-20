@@ -8,11 +8,13 @@ void main() {
   const secretKey =
       '188C879D394E09FDECC04606A126FAE2125FEABD24A2D12C6AC969AE1CEE2AEC';
   const List<String> validInterests = ['pears', 'apples'];
+  const List<String> validUsers = ['user-001'];
   final validApns = {
     'aps': {
       'alert': 'Hello!',
     }
   };
+
 
   setUp(() {
     beamsClient = PushNotifications(instanceId, secretKey);
@@ -78,9 +80,6 @@ void main() {
       expect(() async {
         await beamsClient.publishToInterests(validInterests, apns: {}, fcm: {});
       }, throwsArgumentError);
-    });
-
-    test('publishRequest without an apns or fcm payload throws error', () {
       expect(() async {
         await beamsClient.publishToInterests(validInterests);
       }, throwsArgumentError);
@@ -89,6 +88,54 @@ void main() {
     test('valid publish request returns a 200 response', () async {
       var response = await beamsClient.publishToInterests(
         validInterests,
+        apns: validApns,
+      );
+      expect(response, isNotNull);
+      expect(response.statusCode, 200);
+    });
+  });
+
+  // Publish to users
+  group('publishToUsers:', () {
+    test('Epmty users argument throws error', () {
+      expect(() async {
+        await beamsClient.publishToUsers(null, apns: validApns);
+      }, throwsArgumentError);
+      expect(() async {
+        await beamsClient.publishToUsers([], apns: validApns);
+      }, throwsArgumentError);
+    });
+
+    test('too many users throws error', () {
+      final bigList = List.generate(1100, (int index) => index.toString());
+      expect(() async {
+        await beamsClient.publishToUsers(bigList, apns: validApns);
+      }, throwsArgumentError);
+    });
+
+    test('user names longer than 164 bytes throws error', () {
+      final longName = List.filled(200, 'a').join();
+      expect(() async {
+        await beamsClient.publishToUsers([longName], apns: validApns);
+      }, throwsArgumentError);
+    });
+
+    test('Empty apns and fcm arguments throws error', () {
+      expect(() async {
+        await beamsClient.publishToUsers(validUsers,
+            apns: null, fcm: null);
+      }, throwsArgumentError);
+      expect(() async {
+        await beamsClient.publishToUsers(validUsers, apns: {}, fcm: {});
+      }, throwsArgumentError);
+      expect(() async {
+        await beamsClient.publishToUsers(validUsers);
+      }, throwsArgumentError);
+    });
+
+    test('valid publish request returns a 200 response', () async {
+      var response = await beamsClient.publishToUsers(
+        validUsers,
         apns: validApns,
       );
       expect(response, isNotNull);
