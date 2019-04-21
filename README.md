@@ -1,4 +1,4 @@
-# Dart server SDK
+# Pusher Beams Dart server SDK
 
 ## Installation
 
