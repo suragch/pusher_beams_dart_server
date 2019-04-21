@@ -15,7 +15,6 @@ void main() {
     }
   };
 
-
   setUp(() {
     beamsClient = PushNotifications(instanceId, secretKey);
   });
@@ -113,7 +112,7 @@ void main() {
       }, throwsArgumentError);
     });
 
-    test('user names longer than 164 bytes throws error', () {
+    test('user id longer than 164 bytes throws error', () {
       final longName = List.filled(200, 'a').join();
       expect(() async {
         await beamsClient.publishToUsers([longName], apns: validApns);
@@ -122,8 +121,7 @@ void main() {
 
     test('Empty apns and fcm arguments throws error', () {
       expect(() async {
-        await beamsClient.publishToUsers(validUsers,
-            apns: null, fcm: null);
+        await beamsClient.publishToUsers(validUsers, apns: null, fcm: null);
       }, throwsArgumentError);
       expect(() async {
         await beamsClient.publishToUsers(validUsers, apns: {}, fcm: {});
@@ -141,6 +139,29 @@ void main() {
       expect(response, isNotNull);
       expect(response.statusCode, 200);
     });
+  });
 
+  // Publish to users
+  group('deleteUser::', () {
+    test('Empty user ID throws error', () {
+      expect(() async {
+        await beamsClient.deleteUser(null);
+      }, throwsArgumentError);
+      expect(() async {
+        await beamsClient.deleteUser('');
+      }, throwsArgumentError);
+    });
+
+    test('user id longer than 164 bytes throws error', () {
+      final longName = List.filled(200, 'a').join();
+      expect(() async {
+        await beamsClient.deleteUser(longName);
+      }, throwsArgumentError);
+    });
+
+    test('no error response returned when deleting a valid user', () async {
+      var response = await beamsClient.deleteUser('user-001');
+      expect(response.statusCode, 200);
+    });
   });
 }

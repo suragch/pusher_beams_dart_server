@@ -5,7 +5,8 @@ import 'package:http/http.dart';
 class PushNotifications {
   static const _maxInterests = 100;
   static const _maxUsers = 1000;
-  static const _maxNameLength = 164;
+  static const _maxInterestNameLength = 164;
+  static const _maxUserIdLength = 164;
   static final _validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
 
   final String _instanceId;
@@ -70,9 +71,9 @@ class PushNotifications {
           'but you have ${interests.length}.');
     }
     for (String name in interests) {
-      if (name.length > _maxNameLength) {
+      if (name.length > _maxInterestNameLength) {
         throw ArgumentError(
-            'Interest name length cannot be greater than $_maxNameLength. '
+            'Interest name length cannot be greater than $_maxInterestNameLength. '
             'Error found here: $name');
       }
       if (!_validCharacters.hasMatch(name)) {
@@ -93,13 +94,13 @@ class PushNotifications {
     }
   }
 
-  String _baseUri() {
+  String _basePublishUri() {
     return 'https://$_instanceId.pushnotifications.pusher.com/'
         'publish_api/v1/instances/$_instanceId/publishes/';
   }
 
   String _getPublishInterestsUri() {
-    return '${_baseUri()}interests';
+    return '${_basePublishUri()}interests';
   }
 
   Map<String, String> _getHeaders() {
@@ -137,11 +138,11 @@ class PushNotifications {
     return Encoding.getByName('utf-8');
   }
 
-  /// Publishes a new push notification to [users] in the list who have 
+  /// Publishes a new push notification to [users] in the list who have
   /// been authenticated.
   ///
-  /// There must be at least 1 and no more that can be 1 to 1000 user 
-  /// IDs in [users] per publish request. The user ID name cannot be 
+  /// There must be at least 1 and no more than 1000 user
+  /// IDs in [users] per publish request. The user ID cannot be
   /// longer than 164 bytes and is encoded in UTF-8.
   ///
   /// You must choose at least one of [apns] (Apple) or [fcm] (Google) as the
@@ -178,21 +179,21 @@ class PushNotifications {
       throw ArgumentError('The maximum number of users per publish request '
           'is $_maxUsers, but you have ${users.length}.');
     }
-    for (String name in users) {
-      final bytes = utf8.encode(name);
-      if (bytes.length > _maxNameLength) {
-        throw ArgumentError('User name length cannot be greater than '
-            '$_maxNameLength bytes. Error found here: $name');
+    for (String userId in users) {
+      final bytes = utf8.encode(userId);
+      if (bytes.length > _maxUserIdLength) {
+        throw ArgumentError('User ID length cannot be greater than '
+            '$_maxUserIdLength bytes. Error found here: $userId');
       }
     }
   }
 
   String _getPublishUsersUri() {
-    return '${_baseUri()}users';
+    return '${_basePublishUri()}users';
   }
 
-  String _getUsersBody(List<String> users, Map<String, dynamic> apns,
-      Map<String, dynamic> fcm) {
+  String _getUsersBody(
+      List<String> users, Map<String, dynamic> apns, Map<String, dynamic> fcm) {
     // interests
     Map<String, dynamic> body = {'users': users};
 
@@ -208,5 +209,42 @@ class PushNotifications {
 
     // encode as JSON string
     return json.encode(body);
+  }
+
+  /// Deletes a user with [userId] from Pusher Beams.
+  /// The user will no longer receive notifications, and
+  /// saved state about them will be deleted.
+  Future<Response> deleteUser(String userId) async {
+    _validateUserId(userId);
+
+    final uri = _getDeleteUserUri(userId);
+    final headers = _getHeaders();
+
+    Response response = await delete(
+      uri,
+      headers: headers,
+    );
+
+    print(response.statusCode);
+    print(response.body);
+
+    return response;
+  }
+
+  _validateUserId(String userId) {
+    if (userId == null || userId.isEmpty) {
+      throw ArgumentError('userId cannot be empty');
+    }
+    final bytes = utf8.encode(userId);
+    if (bytes.length > _maxUserIdLength) {
+      throw ArgumentError('User ID length cannot be greater than '
+          '$_maxUserIdLength bytes. Error found here: $userId');
+    }
+  }
+
+  String _getDeleteUserUri(String userId) {
+    String urlEncodedUserId = Uri.encodeFull(userId);
+    return 'https://$_instanceId.pushnotifications.pusher.com/'
+        'customer_api/v1/instances/$_instanceId/users/$urlEncodedUserId';
   }
 }
