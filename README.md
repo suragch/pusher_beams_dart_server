@@ -135,3 +135,22 @@ Future<Response> deleteUser(String userId)
 final result = await beamsClient.deleteUser('user-001');
 print(result.body); // will only have body content if there is an error.
 ```
+
+## Generate token
+
+You can generate a Beams auth token for an authenticated user. The returned token is valid for 24 hours. Give this token to the client, who can use it to associate their device with their Beams user ID.
+
+```
+String generateToken(String userId)
+```
+
+**Arguments**
+
+- `userId`: ID of the already authenticated user to generate the token for.
+
+**Example**
+
+```
+final token = beamsClient.generateToken('user-001');
+// return token to user
+```
