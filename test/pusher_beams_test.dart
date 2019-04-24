@@ -141,8 +141,8 @@ void main() {
     });
   });
 
-  // Publish to users
-  group('deleteUser::', () {
+  // Delete user
+  group('deleteUser:', () {
     test('Empty user ID throws error', () {
       expect(() async {
         await beamsClient.deleteUser(null);
@@ -161,7 +161,35 @@ void main() {
 
     test('no error response returned when deleting a valid user', () async {
       var response = await beamsClient.deleteUser('user-001');
+      expect(response, isNotNull);
       expect(response.statusCode, 200);
+    });
+  });
+
+  // generateToken()
+
+  group('generateToken:', () {
+    test('Empty user ID throws error', () {
+      expect(() async {
+        await beamsClient.generateToken(null);
+      }, throwsArgumentError);
+      expect(() async {
+        await beamsClient.generateToken('');
+      }, throwsArgumentError);
+    });
+
+    test('user id longer than 164 bytes throws error', () {
+      final longName = List.filled(200, 'a').join();
+      expect(() async {
+        await beamsClient.generateToken(longName);
+      }, throwsArgumentError);
+    });
+
+    test('get jwt token back from a valid user id', () {
+      final token = beamsClient.generateToken('user-001');
+      expect(token, isNotNull);
+      final parts = token.split('.');
+      expect(parts.length, 3);
     });
   });
 }

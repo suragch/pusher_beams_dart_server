@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 /// Pusher Beams Client class for sending push notifications to users.
 class PushNotifications {
@@ -8,6 +9,7 @@ class PushNotifications {
   static const _maxInterestNameLength = 164;
   static const _maxUserIdLength = 164;
   static final _validCharacters = RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$');
+  static final _tokenTTL = Duration(hours: 24);
 
   final String _instanceId;
   final String _secretKey;
@@ -32,9 +34,9 @@ class PushNotifications {
   /// the list. No interest name can be longer that 164 characters.
   ///
   /// You must choose at least one of [apns] (Apple) or [fcm] (Google) as the
-  /// payload for the push notification. Setting both is fine. Add the appropriate
-  /// content as a [Map<String, dynamic>]. See the Apple and Google docs for
-  /// details on key values pairs to include.
+  /// payload for the push notification. Setting both is fine. Add the 
+  /// appropriate content as a [Map<String, dynamic>]. See the Apple and Google 
+  /// docs for details on key values pairs to include.
   ///
   /// The [webhookUrl] is an optional parameter if you want to receive webhooks
   /// at key points throughout the publishing process.
@@ -146,9 +148,9 @@ class PushNotifications {
   /// longer than 164 bytes and is encoded in UTF-8.
   ///
   /// You must choose at least one of [apns] (Apple) or [fcm] (Google) as the
-  /// payload for the push notification. Setting both is fine. Add the appropriate
-  /// content as a [Map<String, dynamic>]. See the Apple and Google docs for
-  /// details on key values pairs to include.
+  /// payload for the push notification. Setting both is fine. Add the
+  /// appropriate content as a [Map<String, dynamic>]. See the Apple and Google
+  /// docs for details on key values pairs to include.
   Future<Response> publishToUsers(List<String> users,
       {Map<String, dynamic> apns, Map<String, dynamic> fcm}) async {
     _validateUsers(users);
@@ -180,11 +182,23 @@ class PushNotifications {
           'is $_maxUsers, but you have ${users.length}.');
     }
     for (String userId in users) {
-      final bytes = utf8.encode(userId);
-      if (bytes.length > _maxUserIdLength) {
-        throw ArgumentError('User ID length cannot be greater than '
-            '$_maxUserIdLength bytes. Error found here: $userId');
-      }
+      _validateUserId(userId);
+      // final bytes = utf8.encode(userId);
+      // if (bytes.length > _maxUserIdLength) {
+      //   throw ArgumentError('User ID length cannot be greater than '
+      //       '$_maxUserIdLength bytes. Error found here: $userId');
+      // }
+    }
+  }
+
+  _validateUserId(String userId) {
+    if (userId == null || userId.isEmpty) {
+      throw ArgumentError('userId cannot be empty');
+    }
+    final bytes = utf8.encode(userId);
+    if (bytes.length > _maxUserIdLength) {
+      throw ArgumentError('User ID length cannot be greater than '
+          '$_maxUserIdLength bytes. Error found here: $userId');
     }
   }
 
@@ -225,26 +239,32 @@ class PushNotifications {
       headers: headers,
     );
 
-    print(response.statusCode);
-    print(response.body);
-
     return response;
-  }
-
-  _validateUserId(String userId) {
-    if (userId == null || userId.isEmpty) {
-      throw ArgumentError('userId cannot be empty');
-    }
-    final bytes = utf8.encode(userId);
-    if (bytes.length > _maxUserIdLength) {
-      throw ArgumentError('User ID length cannot be greater than '
-          '$_maxUserIdLength bytes. Error found here: $userId');
-    }
   }
 
   String _getDeleteUserUri(String userId) {
     String urlEncodedUserId = Uri.encodeFull(userId);
     return 'https://$_instanceId.pushnotifications.pusher.com/'
         'customer_api/v1/instances/$_instanceId/users/$urlEncodedUserId';
+  }
+
+  /// Generate a Beams auth token for an authenticated user.
+  ///
+  /// The [userId] cannot be longer than 164 bytes. This method will create
+  /// a token for any user ID you provide, so be sure that you have already
+  /// authenticated the user.
+  ///
+  /// The returned token is valid for 24 hours. Give this token to the client,
+  /// who can use it to associate their device with their Beams user ID.
+  String generateToken(String userId) {
+    _validateUserId(userId);
+
+    final claimSet = JwtClaim(
+      issuer: 'https://$_instanceId.pushnotifications.pusher.com',
+      subject: '${userId}',
+      maxAge: _tokenTTL,
+    );
+
+    return issueJwtHS256(claimSet, _secretKey);
   }
 }
