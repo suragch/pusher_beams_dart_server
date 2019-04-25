@@ -1,4 +1,4 @@
-import 'package:pusher_beams_server/pusher_beams.dart';
+import 'package:pusher_beams_server/push_notifications.dart';
 
 main() {
   //var awesome = Awesome();
