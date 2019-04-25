@@ -18,7 +18,9 @@ class PushNotifications {
   ///
   /// You can get the [instanceId] and [secretKey] strings from the Dashboard.
   /// These strings can't be empty.
-  PushNotifications(this._instanceId, this._secretKey) {
+  PushNotifications(String instanceId, String secretKey)
+      : _instanceId = instanceId,
+        _secretKey = secretKey {
     if (_instanceId == null || _instanceId == '') {
       throw ArgumentError('Instance ID cannot be empty');
     }
@@ -34,8 +36,8 @@ class PushNotifications {
   /// the list. No interest name can be longer that 164 characters.
   ///
   /// You must choose at least one of [apns] (Apple) or [fcm] (Google) as the
-  /// payload for the push notification. Setting both is fine. Add the 
-  /// appropriate content as a [Map<String, dynamic>]. See the Apple and Google 
+  /// payload for the push notification. Setting both is fine. Add the
+  /// appropriate content as a [Map<String, dynamic>]. See the Apple and Google
   /// docs for details on key values pairs to include.
   ///
   /// The [webhookUrl] is an optional parameter if you want to receive webhooks
