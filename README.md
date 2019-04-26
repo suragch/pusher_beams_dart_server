@@ -148,9 +148,13 @@ String generateToken(String userId)
 
 - `userId`: ID of the already authenticated user to generate the token for.
 
+**Return**
+
+- `String`: This method returns the token as a raw String, but when sending the token to the user you should put it in a JSON string with a key name of `token`. (This is what the `BeamsTokenProvider` expects on the client side.)
+
 **Example**
 
 ```
 final token = beamsClient.generateToken('user-001');
-// return token to user
+return Response.ok({'token':token});
 ```
