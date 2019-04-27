@@ -54,6 +54,9 @@ class PushNotifications {
     final body = _getInterestsBody(interests, apns, fcm, webhookUrl);
     final encoding = _getUtf8Encoding();
 
+    print(headers);
+    print(body);
+
     Response response = await post(
       uri,
       headers: headers,
