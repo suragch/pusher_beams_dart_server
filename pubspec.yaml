@@ -2,7 +2,7 @@ name: pusher_beams_server
 description: A Pusher Beams Client for sending push notifications to users.
 version: 0.1.0
 homepage: https://pusher.com/beams
-author: suragch <studymongolian@gmail.com>
+author: Suragch <studymongolian@gmail.com>
 
 environment:
   sdk: '>=2.2.0 <3.0.0'

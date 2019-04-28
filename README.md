@@ -8,13 +8,13 @@ Add the dependency to your `pubspec.yaml` file:
 
 ```
 dependencies:
-  pusher_beams: ^0.1.0
+  pusher_beams_server: ^0.1.0
 ```
 
 Depend on it:
 
 ```
-import 'package:pusher_beams/pusher_beams.dart';
+import 'package:pusher_beams_server/push_notifications.dart';
 ```
 
 ## Configuring the SDK for your instance

@@ -163,9 +163,6 @@ class PushNotifications {
     final body = _getUsersBody(users, apns, fcm);
     final encoding = _getUtf8Encoding();
 
-    print(headers);
-    print(body);
-
     Response response = await post(
       uri,
       headers: headers,
@@ -188,11 +185,6 @@ class PushNotifications {
     }
     for (String userId in users) {
       _validateUserId(userId);
-      // final bytes = utf8.encode(userId);
-      // if (bytes.length > _maxUserIdLength) {
-      //   throw ArgumentError('User ID length cannot be greater than '
-      //       '$_maxUserIdLength bytes. Error found here: $userId');
-      // }
     }
   }
 
