@@ -1,7 +1,7 @@
 name: pusher_beams_server
 description: A Pusher Beams Client for sending push notifications to users.
-version: 0.1.2
-homepage: https://pusher.com/beams
+version: 0.1.3
+homepage: https://github.com/suragch/pusher_beams_dart_server
 author: Suragch <studymongolian@gmail.com>
 
 environment:

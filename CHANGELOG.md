@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Changed homepage to GitHub
+
 ## 0.1.2
 
 - Forgot to update version number in docs

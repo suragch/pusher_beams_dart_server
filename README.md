@@ -8,7 +8,7 @@ Add the dependency to your `pubspec.yaml` file:
 
 ```
 dependencies:
-  pusher_beams_server: ^0.1.2
+  pusher_beams_server: ^0.1.3
 ```
 
 Depend on it:
