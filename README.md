@@ -34,8 +34,8 @@ PushNotifications(String instanceId, String secretKey)
 
 ```
 final beamsClient = PushNotifications(
-  instanceId: 'your_instance_id_here',
-  secretKey: 'your_secret_key_here',
+  'your_instance_id_here',
+  'your_secret_key_here',
 );
 ```
 
@@ -61,10 +61,14 @@ Future<Response> publishToInterests(
 **Example**
 
 ```
-final interests = ['pears', 'apples';
+
+final interests = ['pears', 'apples'];
 final apns = {
   'aps': {
-    'alert': 'Hello!',
+    'alert': {
+      'title': 'Hello',
+      'body': 'Hello, world!',
+    }
   }
 };
 final fcm = {
@@ -102,7 +106,10 @@ Future<Response> publishToUsers(
 final users = ["user-001", "user-002"];
 final apns = {
   'aps': {
-    'alert': 'Hello!',
+    'alert': {
+      'title': 'Hello',
+      'body': 'Hello, world!',
+    }
   }
 };
 final fcm = {
