@@ -2,13 +2,13 @@
 
 ## Installation
 
-The Beams Dart Server SDK is available on Pub here (TODO).
+The Beams Dart Server SDK is available on Pub.
 
 Add the dependency to your `pubspec.yaml` file:
 
 ```
 dependencies:
-  pusher_beams_server: ^0.1.3
+  pusher_beams_server: ^0.1.4
 ```
 
 Depend on it:

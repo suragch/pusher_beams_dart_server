@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Minor documentation edit
+
 ## 0.1.3
 
 - Changed homepage to GitHub
