@@ -14,7 +14,7 @@ dependencies:
 Depend on it:
 
 ```
-import 'package:pusher_beams_server/push_notifications.dart';
+import 'package:pusher_beams_server/pusher_beams_server.dart';
 ```
 
 ## Configuring the SDK for your instance

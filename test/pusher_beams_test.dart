@@ -1,4 +1,4 @@
-import 'package:pusher_beams_server/push_notifications.dart';
+import 'package:pusher_beams_server/pusher_beams_server.dart';
 import 'package:test/test.dart';
 
 void main() {
